@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.pyc
+
+# Virtual environments
+.venv/
+venv/
+
+# Generated results
+results*/
+
+# Temporary Office files
+~$*
+
+# VS Code (optional)
+.vscode/
