@@ -34,7 +34,7 @@ def _cumulative(df, column):
     return df[column].cumsum().to_numpy()
 
 
-def plotting(config, df_alpha, df_beta, I_total, voltage_vector, qCISS):
+def plotting(config, df_alpha, df_beta, I_total, voltage_vector, qEMCHA):
     results_dir = _results_dir(config)
 
     if config.simulation_type == 0:
@@ -52,13 +52,13 @@ def plotting(config, df_alpha, df_beta, I_total, voltage_vector, qCISS):
         sns.lineplot(x=x, y=alpha_drain_history, color=alpha_spins_color, alpha=0.7, label=r"$\alpha$ spins")
         sns.lineplot(x=x, y=beta_drain_history, color=beta_spins_color, alpha=0.7, label=r"$\beta$ spins")
         plt.title(
-            "%d Spins Drain Evolution at %d K, D %.2f, %.2f V & Qciss = %.1f"
+            "%d Spins Drain Evolution at %d K, D %.2f, %.2f V & qEMCHA = %.1f"
             % (
                 config.number_spins,
                 config.Temperature,
                 config.diff_coefficient,
                 config.voltage_magnitude,
-                config.ciss_effect,
+                config.emcha_effect,
             )
         )
         plt.xlabel("Steps")
@@ -73,13 +73,13 @@ def plotting(config, df_alpha, df_beta, I_total, voltage_vector, qCISS):
         sns.lineplot(x=x, y=alpha_source_history, color=alpha_spins_color, label=r"$\alpha$ spins")
         sns.lineplot(x=x, y=beta_source_history, color=beta_spins_color, label=r"$\beta$ spins")
         plt.title(
-            "%d Spins Source Evolution at %d K, D %.2f, %.2f V & Qciss = %.1f"
+            "%d Spins Source Evolution at %d K, D %.2f, %.2f V & qEMCHA = %.1f"
             % (
                 config.number_spins,
                 config.Temperature,
                 config.diff_coefficient,
                 config.voltage_magnitude,
-                config.ciss_effect,
+                config.emcha_effect,
             )
         )
         plt.xlabel("Steps")
@@ -93,7 +93,7 @@ def plotting(config, df_alpha, df_beta, I_total, voltage_vector, qCISS):
         fig, ax = plt.subplots()
         ax.set_title(
             f"{config.number_spins} Spins Drain Evolution at {config.Temperature} K, "
-            f"D {config.diff_coefficient:.2f}, Qciss = {config.ciss_effect} & "
+            f"D {config.diff_coefficient:.2f}, qEMCHA = {config.emcha_effect} & "
             f"{config.voltage_magnitude} V"
         )
         ax.set_xlabel("Steps")
@@ -131,13 +131,13 @@ def plotting(config, df_alpha, df_beta, I_total, voltage_vector, qCISS):
         plt.figure(figsize=(6, 4))
         sns.lineplot(x=x, y=alpha_drain_history, color=alpha_spins_color, alpha=0.7, label=r"$\alpha$ spins")
         sns.lineplot(x=x, y=beta_drain_history, color=beta_spins_color, alpha=0.7, label=r"$\beta$ spins")
-        plt.title(f"Drain Electrons Evolution (q_CISS = {qCISS:.2f})")
+        plt.title(f"Drain Electrons Evolution (q_EMCHA = {qEMCHA:.2f})")
         plt.xlabel("Time Steps")
         plt.ylabel("Drained Electrons")
         plt.xlim([0, config.n_steps])
         plt.ylim([0, max_value_d])
         plt.legend(title="Spin Type", loc="upper left")
-        plt.savefig(os.path.join(temp_dir, f"drain_electrons_qciss_{qCISS:.2f}.png"))
+        plt.savefig(os.path.join(temp_dir, f"drain_electrons_qEMCHA_{qEMCHA:.2f}.png"))
         plt.close()
 
     elif config.simulation_type == 5:

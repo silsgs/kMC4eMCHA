@@ -12,7 +12,7 @@ D = 1.0
 
 alpha = 1.0      # drift
 beta = 0.5       # Zeeman spin bias
-gamma = 0.8      # CISS coupling
+gamma = 0.8      # EMCHA coupling
 delta = 0.6      # eMChA nonlinear term
 
 # ------------------------

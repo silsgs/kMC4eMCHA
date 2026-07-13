@@ -13,7 +13,7 @@ REQUIRED_CONFIG_KEYS = (
     "n_cycles",
     "number_spins",
     "electron_charge",
-    "ciss_effect",
+    "emcha_effect",
     "spin_ratio",
     "type_of_pulse",
     "voltage_magnitude",
@@ -118,7 +118,7 @@ def processing_data():
     config["n_cycles"] = int(config_data["n_cycles"])
     config["number_spins"] = int(config_data["number_spins"])
     config["electron_charge"] = float(config_data["electron_charge"])
-    config["ciss_effect"] = float(config_data["ciss_effect"])
+    config["emcha_effect"] = float(config_data["emcha_effect"])
     config["spin_ratio"] = float(config_data["spin_ratio"])
 
     config["type_of_pulse"] = int(config_data["type_of_pulse"])

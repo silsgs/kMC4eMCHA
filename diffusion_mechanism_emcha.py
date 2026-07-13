@@ -22,7 +22,7 @@ def diffusion_mechanism(
     spin_type,
     config,
     state_matrix,
-    ciss_effect,
+    emcha_effect,
     dV,
     chirality=None,
     magnetic_field=10.0,
@@ -34,7 +34,7 @@ def diffusion_mechanism(
     The drive contains an ordinary voltage term plus a second-order,
     chirality-dependent correction:
 
-        drive = dV + ciss_effect * chirality * spin_type * B * dV**2
+        drive = dV + emcha_effect * chirality * spin_type * B * dV**2
 
     The second term is even in voltage, odd in chirality, and spin dependent.
     """
@@ -46,7 +46,7 @@ def diffusion_mechanism(
     drained_spins = np.zeros(config.n_steps, dtype=int)
     sourced_spins = np.zeros(config.n_steps, dtype=int)
 
-    emcha_drive = dV + ciss_effect * chirality * spin_type * magnetic_field * dV**2
+    emcha_drive = dV + emcha_effect * chirality * spin_type * magnetic_field * dV**2
     right_mov_probability = (
         1 / (1 + np.exp(-(emcha_drive / (kB * temperature))))
     ) * config.diff_coefficient
@@ -125,7 +125,7 @@ def apply_diffusion_mechanism(
     config,
     alpha_state_matrix,
     beta_state_matrix,
-    ciss_effect,
+    emcha_effect,
     dV,
     chirality=None,
     magnetic_field=10.0,
@@ -137,7 +137,7 @@ def apply_diffusion_mechanism(
                 -1,
                 config,
                 alpha_state_matrix,
-                ciss_effect,
+                emcha_effect,
                 dV,
                 chirality=chirality,
                 magnetic_field=magnetic_field,
@@ -151,7 +151,7 @@ def apply_diffusion_mechanism(
                 1,
                 config,
                 beta_state_matrix,
-                ciss_effect,
+                emcha_effect,
                 dV,
                 chirality=chirality,
                 magnetic_field=magnetic_field,
@@ -184,7 +184,7 @@ def run_single_simulation(
     config,
     voltage,
     chirality,
-    ciss_effect=None,
+    emcha_effect=None,
     magnetic_field=10.0,
     temperature=None,
 ):
@@ -193,7 +193,7 @@ def run_single_simulation(
         config,
         alpha_state_matrix,
         beta_state_matrix,
-        config.ciss_effect if ciss_effect is None else ciss_effect,
+        config.emcha_effect if emcha_effect is None else emcha_effect,
         voltage / config.positions,
         chirality=chirality,
         magnetic_field=magnetic_field,
@@ -209,14 +209,14 @@ def run_single_simulation(
 def _simulate_current_only(
     spin_type,
     config,
-    ciss_effect,
+    emcha_effect,
     voltage,
     chirality,
     magnetic_field,
     temperature,
 ):
     dV = voltage / config.positions
-    drive = dV + ciss_effect * chirality * spin_type * magnetic_field * dV**2
+    drive = dV + emcha_effect * chirality * spin_type * magnetic_field * dV**2
     right_probability = (
         1 / (1 + np.exp(-(drive / (kB * temperature))))
     ) * config.diff_coefficient
@@ -257,19 +257,19 @@ def run_single_simulation_fast(
     config,
     voltage,
     chirality,
-    ciss_effect=None,
+    emcha_effect=None,
     magnetic_field=10.0,
     temperature=None,
 ):
     if temperature is None:
         temperature = getattr(config, "Temperature", 300)
-    if ciss_effect is None:
-        ciss_effect = config.ciss_effect
+    if emcha_effect is None:
+        emcha_effect = config.emcha_effect
 
     alpha_current = _simulate_current_only(
         -1,
         config,
-        ciss_effect,
+        emcha_effect,
         voltage,
         chirality,
         magnetic_field,
@@ -278,7 +278,7 @@ def run_single_simulation_fast(
     beta_current = _simulate_current_only(
         1,
         config,
-        ciss_effect,
+        emcha_effect,
         voltage,
         chirality,
         magnetic_field,
@@ -292,7 +292,7 @@ def run_single_simulation_fast(
 def run_emcha_symmetry_analysis(
     config,
     voltage_values=None,
-    ciss_effect=None,
+    emcha_effect=None,
     magnetic_field=10.0,
     temperature=None,
     n_repeats=10,
@@ -342,7 +342,7 @@ def run_emcha_symmetry_analysis(
                         config,
                         voltage,
                         chirality,
-                        ciss_effect=ciss_effect,
+                        emcha_effect=emcha_effect,
                         magnetic_field=magnetic_field,
                         temperature=temperature,
                     )

@@ -5,7 +5,7 @@ import pandas as pd
 kB = 8.617333262*10**(-5) # eV/K
 amperec = 6.241509074 * 10 **(18) ## from e/s --> ampere
 
-def diffusion_mechanism(spin_type, config, state_matrix, ciss_effect, dV):
+def diffusion_mechanism(spin_type, config, state_matrix, emcha_effect, dV):
     """
     Simulate one spin population diffusing on a 1D lattice.
 
@@ -21,15 +21,15 @@ def diffusion_mechanism(spin_type, config, state_matrix, ciss_effect, dV):
     B = 10  # units
     T = 300  # Kelvin
     helix_twisting  = 1 
-    ciss_contribution = dV + ciss_effect * helix_twisting  * spin_type * B * dV**2
+    emcha_contribution = dV + emcha_effect * helix_twisting  * spin_type * B * dV**2
     D = config.diff_coefficient
 
     right_mov_probability = (
-        1/(1+np.exp(-(ciss_contribution/(kB*T))))) * D
+        1/(1+np.exp(-(emcha_contribution/(kB*T))))) * D
 
-    #ciss_contribution = ciss_effect * spin_type * np.tanh(10 * dV)
-    #right_mov_probability = ( 1 / (1 + np.exp( - ( (dV) / (kB * 300) ) * (1 + ciss_contribution))) ) * config.diff_coefficient
-    #right_mov_probability = ( 1 / (1 + np.exp( -( 10* dV ) * (1 + ciss_contribution))) ) * config.diff_coefficient
+    #emcha_contribution = emcha_effect * spin_type * np.tanh(10 * dV)
+    #right_mov_probability = ( 1 / (1 + np.exp( - ( (dV) / (kB * 300) ) * (1 + emcha_contribution))) ) * config.diff_coefficient
+    #right_mov_probability = ( 1 / (1 + np.exp( -( 10* dV ) * (1 + emcha_contribution))) ) * config.diff_coefficient
     left_mov_probability = config.diff_coefficient - right_mov_probability
 
     max_position = config.positions
@@ -104,19 +104,19 @@ def diffusion_mechanism(spin_type, config, state_matrix, ciss_effect, dV):
         float(np.mean(right_mov_probability)),
         float(np.mean(left_mov_probability)),
         I_difference,
-        ciss_contribution,
+        emcha_contribution,
     )
 
 
-def apply_diffusion_mechanism(config, alpha_state_matrix, beta_state_matrix, ciss_effect, dV):
+def apply_diffusion_mechanism(config, alpha_state_matrix, beta_state_matrix, emcha_effect, dV):
     alpha_state_matrix, total_drained_alpha_spins, total_sourced_alpha_spins, df_alpha, \
-        r_prob_mean_alpha, l_prob_mean_alpha, I_diff_alpha, ciss_contribution_alpha = (
-            diffusion_mechanism(-1, config, alpha_state_matrix, ciss_effect, dV)
+        r_prob_mean_alpha, l_prob_mean_alpha, I_diff_alpha, emcha_contribution_alpha = (
+            diffusion_mechanism(-1, config, alpha_state_matrix, emcha_effect, dV)
         )
 
     beta_state_matrix, total_drained_beta_spins, total_sourced_beta_spins, df_beta, \
-        r_prob_mean_beta, l_prob_mean_beta, I_diff_beta, ciss_contribution_beta = (
-            diffusion_mechanism(1, config, beta_state_matrix, ciss_effect, dV)
+        r_prob_mean_beta, l_prob_mean_beta, I_diff_beta, emcha_contribution_beta = (
+            diffusion_mechanism(1, config, beta_state_matrix, emcha_effect, dV)
         )
 
     df_summary = pd.DataFrame({
@@ -134,8 +134,8 @@ def apply_diffusion_mechanism(config, alpha_state_matrix, beta_state_matrix, cis
         df_beta,
         alpha_state_matrix,
         beta_state_matrix,
-        ciss_contribution_alpha,
-        ciss_contribution_beta,
+        emcha_contribution_alpha,
+        emcha_contribution_beta,
     )
 
 

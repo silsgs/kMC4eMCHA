@@ -7,7 +7,7 @@ REQUIRED_CONFIG_KEYS = (
     "helix_twisting",
     "positions",
     "number_spins",
-    "ciss_effect",
+    "emcha_effect",
     "spin_ratio",
     "voltage_magnitude",
     "Temperature",
@@ -71,6 +71,9 @@ def validate_config(config_data):
 
     if float(config_data["spin_ratio"]) < 0:
         raise ValueError("spin_ratio must be greater than or equal to 0")
+    
+    if float(config_data["Temperature"]) <= 0:
+        raise ValueError("Temperature must be greater than 0")
 
     for key in ("alpha_init_position", "beta_init_position"):
         value = int(config_data[key])
@@ -100,7 +103,7 @@ def processing_data():
     config["helix_twisting"] = int(config_data["helix_twisting"])
     config["positions"] = int(config_data["positions"])
     config["number_spins"] = int(config_data["number_spins"])
-    config["ciss_effect"] = float(config_data["ciss_effect"])
+    config["emcha_effect"] = float(config_data["emcha_effect"])
     config["spin_ratio"] = float(config_data["spin_ratio"])
 
     config["voltage_magnitude"] = float(config_data["voltage_magnitude"])
