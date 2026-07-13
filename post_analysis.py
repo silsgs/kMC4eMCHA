@@ -1,8 +1,6 @@
 #%%
-
 """
 Data used:
-
     - First simulations
 
 # mu_B/k_B
