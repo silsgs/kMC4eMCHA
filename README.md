@@ -29,7 +29,7 @@ Important parameters include:
 - `spin_ratio`: controls the relative number of alpha and beta spins. A value of `1` gives equal populations.
 - `alpha_init_position`, `beta_init_position`: initial positions for the two spin populations.
 - `helix_twisting`: chirality/sign parameter of the molecular helix, usually `-1` or `1`.
-- `ciss_effect`: strength of the spin/chirality contribution.
+- `emcha_effect`: strength of the spin/chirality contribution.
 - `diff_coefficient`: total probability scale for attempted hopping.
 - `Temperature`: simulation temperature in Kelvin.
 - `voltage_magnitude`: voltage used to define the default voltage step `dV`.
@@ -67,11 +67,11 @@ The helper function `run_single_simulation()` initializes the spin matrices and 
 
 Supported `simulation_type` values include:
 - 0: run a single simulation and plot cummulative drained/sourced electrons. 
-- 1: sweep the CISS parameter and generate frames/GIFs of drained electrons. 
+- 1: sweep the EMCHA parameter and generate frames/GIFs of drained electrons. 
 - 5: perform a voltage sweep and plot spin-resolved current response. 
 - 6: generate a spin-polarization heatmap animation.
 - 7:generate an animation of alpha/beta spin distributions along the molecule.
-- 10: sweep the CISS parameter and plot current differences interactively. 
+- 10: sweep the EMCHA parameter and plot current differences interactively. 
 
 For voltage sweeps, the current version uses a hardcoded voltage range from -0.10 V to 0.10 V.
 
@@ -94,13 +94,13 @@ The function `diffusion_mechanism()` simulates one spin population at a time. It
 - spin_type = 1 for beta spins,
 - the configuration object,
 - the state matrix,
-- the CISS parameter,
+- the EMCHA parameter,
 - the voltage step dV.
 
 The hopping probabilities are spin-dependent. eMCHA contribution is coded as follows:
 
 ```python
-ciss_contribution = ciss_effect * spin_type * helix_twisting * tanh(dV)
+emcha_contribution = emcha_effect * spin_type * helix_twisting * tanh(dV)
 ```
 This contribution modifies the right-moving probability through a voltage-, temperature-, spin-, and chirality-dependent expression. The left-moving probability is then defined as:
 
@@ -132,13 +132,13 @@ plotting.py contains all visualization routines. It uses Matplotlib, Seaborn, Pi
 The main function is:
 
 ```{python}
-plotting(config, df_alpha, df_beta, I_total, voltage_vector, qCISS)
+plotting(config, df_alpha, df_beta, I_total, voltage_vector, qEMCHA)
 ```
 
 Its behavior depends on `config.simulation_type`.
 
 For `simulation_type == 0`, it plots cumulative drained and sourced electrons for alpha and beta spins, and also saves an animated GIF of the drain evolution.
-For `simulation_type == 1`, it saves temporary frames showing drained-electron evolution for different CISS values. These frames are later combined into a GIF by main.py.
+For `simulation_type == 1`, it saves temporary frames showing drained-electron evolution for different EMCHA values. These frames are later combined into a GIF by main.py.
 For `simulation_type == 5`, it plots the voltage-dependent current response for alpha spins, beta spins, and the unpolarized average.
 For `simulation_type == 6`, it generates a heatmap animation of spin polarization along the molecule, where the local polarization is computed from the difference between alpha and beta occupation counts.
 For `simulation_type == 7`, it creates an animation showing the spatial distribution of alpha and beta spins over time.

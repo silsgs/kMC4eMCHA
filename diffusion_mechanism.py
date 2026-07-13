@@ -6,7 +6,7 @@ kB = 8.617333262*10**(-5) # eV/K
 amperec = 6.241509074 * 10 **(18) ## from e/s --> ampere
 
 
-def diffusion_mechanism(spin_type, config, state_matrix, ciss_effect, dV):
+def diffusion_mechanism(spin_type, config, state_matrix, emcha_effect, dV):
     """
     Simulate one spin population diffusing on a 1D lattice.
 
@@ -15,13 +15,11 @@ def diffusion_mechanism(spin_type, config, state_matrix, ciss_effect, dV):
     particle crossing the left boundary is counted as sourced and re-enters at
     the maximum position.
     """
-    ciss_effect = config.ciss_effect
+
     helix_twisting  = config.helix_twisting  # signo : signo del campo magnetico que genera el e- pasando por la helice
 
     drained_spins = np.zeros(config.n_steps, dtype=int)
     sourced_spins = np.zeros(config.n_steps, dtype=int)
-     
-    ciss_contribution = np.exp( ciss_effect * spin_type * helix_twisting * np.abs(np.tanh( dV )) ) 
     
     """
     #### v 1.2 --> not valid yet
@@ -30,7 +28,7 @@ def diffusion_mechanism(spin_type, config, state_matrix, ciss_effect, dV):
     T = 300 # harcoded for testing
     #print(T)
 
-    ciss_contribution = np.exp( ciss_effect * spin_type * helix_twisting * np.abs(np.tanh( dV )) ) 
+    emcha_contribution = np.exp( emcha_effect * spin_type * helix_twisting * np.abs(np.tanh( dV )) ) 
     
     E_right = barrier - bias
     E_left = barrier + bias
@@ -41,12 +39,12 @@ def diffusion_mechanism(spin_type, config, state_matrix, ciss_effect, dV):
     norm_E_left = E_left - (fund)
     norm_E_stay = E_stay - (fund)
 
-    bltz_E_right = ( np.exp(-(norm_E_right / (kB * T) ))) * ciss_contribution
-    bltz_E_left = ( np.exp(-(norm_E_left / (kB * T) ))) / ciss_contribution
+    bltz_E_right = ( np.exp(-(norm_E_right / (kB * T) ))) * emcha_contribution
+    bltz_E_left = ( np.exp(-(norm_E_left / (kB * T) ))) / emcha_contribution
     bltz_E_stay = np.exp( (norm_E_stay / ( kB * T) ) )
 
-    #bltz_E_right = np.exp( (norm_E_right / ( kB * T) ) ) * ( 1+ np.exp(ciss_contribution) ) 
-    #bltz_E_left = np.exp( (norm_E_left / ( kB * T) ) ) / ( 1+ np.exp(ciss_contribution) ) 
+    #bltz_E_right = np.exp( (norm_E_right / ( kB * T) ) ) * ( 1+ np.exp(emcha_contribution) ) 
+    #bltz_E_left = np.exp( (norm_E_left / ( kB * T) ) ) / ( 1+ np.exp(emcha_contribution) ) 
     #bltz_E_stay = np.exp( (norm_E_stay / ( kB * T) ) )
 
     p_bltz_E_right = bltz_E_right / (bltz_E_right + bltz_E_left + bltz_E_stay)
@@ -57,24 +55,22 @@ def diffusion_mechanism(spin_type, config, state_matrix, ciss_effect, dV):
 
     print(f"Right  probability: {right_mov_probability}")
     print(f"Left  probability: {left_mov_probability}")
-    print(f"CISS contribution: {ciss_contribution}")
+    print(f"EMCHA contribution: {emcha_contribution}")
 
     diff_coeff = right_mov_probability + left_mov_probability
     #### end v 1.2
     """
 
     #### v 1.1 --> stable
-    D = 0.5
-    #T = 300 # harcoded for testing
+    diff_coeff = config.diff_coefficient
     T = config.Temperature
-    ciss_contribution = ciss_effect * spin_type * helix_twisting * np.tanh( dV )
+    emcha_contribution = emcha_effect * spin_type * helix_twisting * np.tanh( dV )
     
     right_mov_probability = (
-        1/ ( 1 + np.exp( -( ( dV / (kB * T) ) * ( np.exp(ciss_contribution) ) ) ) ) ) * D 
+        1/ ( 1 + np.exp( -( ( dV / (kB * T) ) * ( np.exp(emcha_contribution) ) ) ) ) ) * diff_coeff 
     
-    left_mov_probability = D - right_mov_probability
+    left_mov_probability = diff_coeff - right_mov_probability
 
-    diff_coeff = config.diff_coefficient
     #### end v 1.1
 
     max_position = config.positions
@@ -144,19 +140,19 @@ def diffusion_mechanism(spin_type, config, state_matrix, ciss_effect, dV):
         float(np.mean(right_mov_probability)),
         float(np.mean(left_mov_probability)),
         I_difference,
-        ciss_contribution,
+        emcha_contribution,
     )
 
 
-def apply_diffusion_mechanism(config, alpha_state_matrix, beta_state_matrix, ciss_effect, dV):
+def apply_diffusion_mechanism(config, alpha_state_matrix, beta_state_matrix, emcha_effect, dV):
     alpha_state_matrix, total_drained_alpha_spins, total_sourced_alpha_spins, df_alpha, \
-        r_prob_mean_alpha, l_prob_mean_alpha, I_diff_alpha, ciss_contribution_alpha = (
-            diffusion_mechanism(-1, config, alpha_state_matrix, ciss_effect, dV)
+        r_prob_mean_alpha, l_prob_mean_alpha, I_diff_alpha, emcha_contribution_alpha = (
+            diffusion_mechanism(-1, config, alpha_state_matrix, emcha_effect, dV)
         )
 
     beta_state_matrix, total_drained_beta_spins, total_sourced_beta_spins, df_beta, \
-        r_prob_mean_beta, l_prob_mean_beta, I_diff_beta, ciss_contribution_beta = (
-            diffusion_mechanism(1, config, beta_state_matrix, ciss_effect, dV)
+        r_prob_mean_beta, l_prob_mean_beta, I_diff_beta, emcha_contribution_beta = (
+            diffusion_mechanism(1, config, beta_state_matrix, emcha_effect, dV)
         )
 
     df_summary = pd.DataFrame({
@@ -174,8 +170,8 @@ def apply_diffusion_mechanism(config, alpha_state_matrix, beta_state_matrix, cis
         df_beta,
         alpha_state_matrix,
         beta_state_matrix,
-        ciss_contribution_alpha,
-        ciss_contribution_beta,
+        emcha_contribution_alpha,
+        emcha_contribution_beta,
     )
 
 #def magnetic_field():
