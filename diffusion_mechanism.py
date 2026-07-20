@@ -64,12 +64,14 @@ def diffusion_mechanism(spin_type, config, state_matrix, emcha_effect, dV):
     #### v 1.1 --> stable
     diff_coeff = config.diff_coefficient
     T = config.Temperature
-    emcha_contribution = emcha_effect * spin_type * helix_twisting * np.tanh( dV )
-    
+
+    # we assume the molecule is described by emcha_effect and helix_twisting
+    emcha_contribution = emcha_effect * helix_twisting * spin_type * np.tanh( dV )
+
     right_mov_probability = (
         1/ ( 1 + np.exp( -( ( dV / (kB * T) ) * ( np.exp(emcha_contribution) ) ) ) ) ) * diff_coeff 
-    
-    left_mov_probability = diff_coeff - right_mov_probability
+     
+    left_mov_probability = diff_coeff - right_mov_probability  ## just for checking 
 
     #### end v 1.1
 

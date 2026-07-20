@@ -18,16 +18,16 @@ g_factor = 2.00232
 # temperature in K
 temp = 8 
 
-## bias
-V = 0.0765
 
-# current from simulations
-alpha_current_p = 0.16695
-beta_current_p = 0.21643
+##  qEMCHA,  V bias, I diff alpha , I diff beta, I total
+0.90, -0.0755, -2.194341e-01, -5.160931e-01, -3.677636e-01
+0.90,  0.0755, 5.177113e-01, 2.174634e-01, 3.675874e-01
 
-alpha_current_n = -0.21626
-beta_current_n = -0.16705
+0.95, -0.0755, -2.327322e-01, -5.438589e-01, -3.882955e-01
+0.95,  0.0755, 5.475118e-01, 2.306814e-01, 3.890966e-01
 
+0.99, -0.0755, -2.427137e-01, -5.678915e-01, -4.053026e-01
+0.99,  0.0755, 5.701826e-01, 2.411276e-01, 4.056551e-01
 
 ## bias
 V = 0.15
@@ -455,3 +455,5 @@ plt.savefig(r"C:\Users\silvi\OneDrive - Trinity College Dublin\Projects\eMCHA-ST
             dpi = 300)
 
 
+
+# %%
