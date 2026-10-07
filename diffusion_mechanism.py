@@ -6,6 +6,7 @@ kB = 8.617333262*10**(-5) # eV/K
 amperec = 6.241509074 * 10 **(18) ## from e/s --> ampere
 
 
+
 def diffusion_mechanism(spin_type, config, state_matrix, emcha_effect, dV):
     """
     Simulate one spin population diffusing on a 1D lattice.
@@ -15,7 +16,8 @@ def diffusion_mechanism(spin_type, config, state_matrix, emcha_effect, dV):
     particle crossing the left boundary is counted as sourced and re-enters at
     the maximum position.
     """
-
+    diff_coeff = config.diff_coefficient
+    T = config.Temperature
     helix_twisting  = config.helix_twisting  # signo : signo del campo magnetico que genera el e- pasando por la helice
 
     drained_spins = np.zeros(config.n_steps, dtype=int)
@@ -61,19 +63,48 @@ def diffusion_mechanism(spin_type, config, state_matrix, emcha_effect, dV):
     #### end v 1.2
     """
 
+    """
+    ### start v 1.3
+    # recovering emcha
+    # we assume the molecule is described by emcha_effect and helix_twisting
+    #emcha_contribution = emcha_effect * helix_twisting * spin_type * np.tanh(dV)  ## recovers emcha ; emcha_effect=30 ## stable
+    #emcha_contribution = emcha_effect * helix_twisting * spin_type * (1-np.cos(dV/0.1 ))  ## recovers emcha
+    #emcha_contribution = emcha_effect * helix_twisting * spin_type * (np.sin((dV/0.1)**2)) ## recovers emcha
+    
+    ## recovering ciss
+    #emcha_contribution = emcha_effect * helix_twisting * spin_type * (np.sin(dV/0.1 ))  ## recovers ciss
+    #emcha_contribution = emcha_effect * helix_twisting * spin_type * (dV/0.1)
+
+    #right_mov_probability = (
+    #    1/ ( 1 + np.exp( -( ( dV / (kB * T) ) * ( np.exp(emcha_contribution) ) ) ) ) ) * diff_coeff 
+    
+    # probabilidad de avanzar en el sentido de la corriente
+    right_mov_probability = (
+            1/ ( 1 + np.exp( -( ( dV / (kB * T) ) + ( emcha_contribution / (kB * T) )  ) ) ) ) * diff_coeff 
+
+    #right_mov_probability = (
+    #    1/ ( 1 + np.exp( -( ( dV / (kB * T) ) ) ) ) ) * diff_coeff 
+        
+    left_mov_probability = diff_coeff - right_mov_probability  ## just for checking 
+    ### end v 1.3
+    """
+
+    
     #### v 1.1 --> stable
-    diff_coeff = config.diff_coefficient
-    T = config.Temperature
 
     # we assume the molecule is described by emcha_effect and helix_twisting
-    emcha_contribution = emcha_effect * helix_twisting * spin_type * np.tanh( dV )
-
+    emcha_contribution = emcha_effect * helix_twisting * spin_type * np.tanh(dV)  ## recovers emcha ; emcha_effect=30
+    
     right_mov_probability = (
         1/ ( 1 + np.exp( -( ( dV / (kB * T) ) * ( np.exp(emcha_contribution) ) ) ) ) ) * diff_coeff 
+    
+    #right_mov_probability = (
+    #    1/ ( 1 + np.exp( -( ( dV / (kB * T) ) ) ) ) ) * diff_coeff 
      
     left_mov_probability = diff_coeff - right_mov_probability  ## just for checking 
 
     #### end v 1.1
+
 
     max_position = config.positions
 
@@ -176,8 +207,6 @@ def apply_diffusion_mechanism(config, alpha_state_matrix, beta_state_matrix, emc
         emcha_contribution_beta,
     )
 
-#def magnetic_field():
-    
 
 # Backwards-compatible name used by the original scripts.
 apply_diffussion_mechanism = apply_diffusion_mechanism

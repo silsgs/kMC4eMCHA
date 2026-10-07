@@ -8,9 +8,16 @@ venv/
 
 # Generated results
 results*/
+*.ods
+*.xls
+*.xlsx
+*.csv
+*.pptx
 
 # Temporary Office files
 ~$*
+test.py
 
 # VS Code (optional)
+*code-workspace
 .vscode/

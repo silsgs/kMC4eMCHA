@@ -3,7 +3,7 @@
 #**************************************************************************
 
 #-------------------------------------------------------------------------------------------------------------------------------
-simulation_name: exp01_qemcha_0d99  # Name used for output folder: results_<simulation_name>
+simulation_name: DNA_simulation_diff_0.05_pos44_nspins1K  # Name used for output folder: results_<simulation_name>
 #-------------------------------------------------------------------------------------------------------------------------------
 simulation_type: 5                    # Supported values: 0, 1, 5, 6, 7, 10
 #-------------------------------------------------------------------------------------------------------------------------------
@@ -17,17 +17,17 @@ setting_seed: 1                       # 0: random run, 1: reproducible run
 #**************************************************************************
 
 #-------------------------------------------------------------------------------------------------------------------------------
-n_steps: 1000                         # Total number of simulation steps
+n_steps: 27000                         # Total number of simulation steps
 #-------------------------------------------------------------------------------------------------------------------------------
-positions: 5                         # Number of discrete spatial points along the molecule
+positions: 44                         # Number of discrete spatial points along the molecule
 #-------------------------------------------------------------------------------------------------------------------------------
-number_spins: 1000                    # Total number of electrons/spins
+number_spins: 1000                    # Total number of electrons/spins , default is 1000
 #-------------------------------------------------------------------------------------------------------------------------------
 spin_ratio: 1                         # Ratio between spin populations; 1 gives equal alpha/beta counts
 #-------------------------------------------------------------------------------------------------------------------------------
-alpha_init_position: 3                # Initial spatial position of alpha-spin electrons
+alpha_init_position: 22                # Initial spatial position of alpha-spin electrons
 #-------------------------------------------------------------------------------------------------------------------------------
-beta_init_position: 3                 # Initial spatial position of beta-spin electrons
+beta_init_position: 22                 # Initial spatial position of beta-spin electrons
 #-------------------------------------------------------------------------------------------------------------------------------
 
 #**************************************************************************
@@ -37,9 +37,9 @@ beta_init_position: 3                 # Initial spatial position of beta-spin el
 #-------------------------------------------------------------------------------------------------------------------------------
 helix_twisting: -1                    # Chirality parameter, -1: left; 1: right
 #-------------------------------------------------------------------------------------------------------------------------------
-emcha_effect: 30                        # Strength of spin/chirality contribution
+emcha_effect: 0.1                     # Strength of spin/chirality contribution
 #-------------------------------------------------------------------------------------------------------------------------------
-diff_coefficient: 0.99                 # Diffusion coefficient / attempted hopping scale
+diff_coefficient: 0.05                # Diffusion coefficient / attempted hopping scale
 #-------------------------------------------------------------------------------------------------------------------------------
 Temperature: 300                      # Temperature in K
 #-------------------------------------------------------------------------------------------------------------------------------
